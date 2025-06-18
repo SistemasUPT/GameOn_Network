@@ -24,8 +24,8 @@
         <nav class="main-nav-inst">
             <ul>
                 <li><a href="dashboard.php">DASHBOARD</a></li>
-                <li><a href="instalaciones.php">MIS INSTALACIONES</a></li>
-                <li><a href="horarios.php">GESTIÓN HORARIOS</a></li>
+                <li><a href="instalaciones_deportivas.php">INSTALACIONES DEPORTIVAS</a></li>
+                <li><a href="areas_deportivas.php">ÁREAS DEPORTIVAS</a></li>
                 <li><a href="reservas.php">RESERVAS</a></li>
                 <li><a href="torneos.php">TORNEOS</a></li>
             </ul>

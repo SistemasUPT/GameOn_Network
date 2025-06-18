@@ -71,5 +71,43 @@ class InsDeporController {
         
         return $instalacionesCompletas;
     }
+    
+    // Obtener instalaciones de un usuario específico
+    public function getInstalacionesPorUsuario($usuarioInstalacionId) {
+        return $this->insDeporModel->getInstalacionesPorUsuario($usuarioInstalacionId);
+    }
+    
+    // Obtener reservas de hoy para un usuario
+    public function getReservasHoyPorUsuario($usuarioInstalacionId) {
+        return $this->insDeporModel->getReservasHoyPorUsuario($usuarioInstalacionId);
+    }
+    
+    // Obtener calificación promedio de un usuario
+    public function getCalificacionPromedioPorUsuario($usuarioInstalacionId) {
+        return $this->insDeporModel->getCalificacionPromedioPorUsuario($usuarioInstalacionId);
+    }
+    
+    // Obtener estadísticas del mes para un usuario
+    public function getEstadisticasMesPorUsuario($usuarioInstalacionId) {
+        return $this->insDeporModel->getEstadisticasMesPorUsuario($usuarioInstalacionId);
+    }
+    
+    // Obtener instalaciones completas con información adicional para un usuario específico
+    public function getInstalacionesCompletasPorUsuario($usuarioInstalacionId) {
+        $instalaciones = $this->getInstalacionesPorUsuario($usuarioInstalacionId);
+        $instalacionesCompletas = [];
+        
+        foreach ($instalaciones as $instalacion) {
+            $horarios = $this->getHorariosInstalacion($instalacion['id']);
+            $deportes = $this->getDeportesInstalacion($instalacion['id']);
+            
+            $instalacion['horarios'] = $this->formatearHorarios($horarios);
+            $instalacion['deportes'] = $deportes;
+            
+            $instalacionesCompletas[] = $instalacion;
+        }
+        
+        return $instalacionesCompletas;
+    }
 }
 ?>

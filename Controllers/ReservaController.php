@@ -9,16 +9,13 @@ class ReservaController {
     }
 
     public function obtenerReservas() {
-        // Manejar diferentes acciones
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $action = $_GET['action'] ?? '';
             
             switch($action) {
                 case 'getCronograma':
-                    $this->obtenerCronograma();
-                    break;
                 case 'getHorarios':
-                    $this->obtenerCronograma();
+                    $this->obtenerCronogramaArea();
                     break;
                 case 'obtener_eventos_mes':
                     $this->obtenerEventosMes();
@@ -32,13 +29,103 @@ class ReservaController {
                 case 'obtener_equipos_usuario':
                     $this->obtenerEquiposUsuario();
                     break;
+                case 'reservas_institucion':
+                    $this->obtenerReservasInstitucion();
+                    break;
                 default:
                     $this->sendError('Acción no válida');
+                    break;
+            }
+        } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $action = $_POST['action'] ?? '';
+            
+            switch($action) {
+                case 'crear_reserva':
+                    $this->crearReserva();
+                    break;
+                default:
+                    $this->sendError('Acción POST no válida');
                     break;
             }
         }
     }
 
+    // ✅ NUEVO: Obtener cronograma de área deportiva
+    private function obtenerCronogramaArea() {
+        try {
+            $areaId = intval($_GET['area_id'] ?? $_GET['id'] ?? 0);
+            $fecha = $_GET['fecha'] ?? null;
+
+            if ($areaId <= 0) {
+                throw new Exception('ID de área deportiva inválido');
+            }
+
+            $cronograma = $this->reservaModel->obtenerCronogramaAreaDeportiva($areaId, $fecha);
+            
+            if (!$cronograma) {
+                throw new Exception('Área deportiva no encontrada');
+            }
+
+            $this->sendSuccess($cronograma);
+
+        } catch (Exception $e) {
+            $this->sendError($e->getMessage());
+        }
+    }
+
+    // ✅ NUEVO: Obtener reservas para instituciones deportivas
+    private function obtenerReservasInstitucion() {
+        session_start();
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'instalacion') {
+            $this->sendError('Usuario no autorizado');
+            return;
+        }
+
+        try {
+            $usuarioInstalacionId = $_SESSION['user_id'];
+            $fecha = $_GET['fecha'] ?? null;
+            
+            $reservas = $this->reservaModel->obtenerReservasPorUsuarioInstalacion($usuarioInstalacionId, $fecha);
+            $this->sendSuccess($reservas);
+            
+        } catch (Exception $e) {
+            $this->sendError('Error obteniendo reservas: ' . $e->getMessage());
+        }
+    }
+
+    // ✅ NUEVO: Crear reserva
+    private function crearReserva() {
+        session_start();
+        if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'deportista') {
+            $this->sendError('Usuario no autorizado');
+            return;
+        }
+
+        try {
+            $usuarioId = $_SESSION['user_id'];
+            $areaId = intval($_POST['area_id']);
+            $fecha = $_POST['fecha'];
+            $horaInicio = $_POST['hora_inicio'];
+            $horaFin = $_POST['hora_fin'];
+
+            if (!$areaId || !$fecha || !$horaInicio || !$horaFin) {
+                throw new Exception('Datos incompletos');
+            }
+
+            $resultado = $this->reservaModel->crearReserva($usuarioId, $areaId, $fecha, $horaInicio, $horaFin);
+            
+            if ($resultado['success']) {
+                $this->sendSuccess($resultado);
+            } else {
+                $this->sendError($resultado['message']);
+            }
+
+        } catch (Exception $e) {
+            $this->sendError('Error creando reserva: ' . $e->getMessage());
+        }
+    }
+
+    // ✅ MANTENER FUNCIONES EXISTENTES
     private function obtenerEventosMes() {
         session_start();
         if (!isset($_SESSION['user_id'])) {
@@ -62,17 +149,15 @@ class ReservaController {
             
             $eventos = [];
             
-            // Procesar reservas (ahora sin duplicados)
             foreach ($reservas as $reserva) {
                 $eventos[] = [
                     'fecha' => $reserva['fecha'],
                     'tipo' => 'reserva',
                     'titulo' => $reserva['deporte'] . ' ' . substr($reserva['hora_inicio'], 0, 5),
-                    'detalle' => $reserva['instalacion'] . ' (' . $reserva['estado'] . ')'
+                    'detalle' => $reserva['instalacion'] . ' - ' . $reserva['nombre_area'] . ' (' . $reserva['estado'] . ')'
                 ];
             }
             
-            // Procesar torneos (ahora sin duplicados y con deporte)
             foreach ($torneos as $torneo) {
                 $eventos[] = [
                     'fecha' => substr($torneo['fecha'], 0, 10),
@@ -137,38 +222,6 @@ class ReservaController {
         }
     }
 
-    private function obtenerCronograma() {
-        try {
-            $idInstitucion = intval($_GET['id']);
-            $fecha = $_GET['fecha'] ?? null;
-
-            if ($idInstitucion <= 0) {
-                throw new Exception('ID de institución inválido');
-            }
-
-            $cronograma = $this->reservaModel->obtenerCronogramaDisponibilidad($idInstitucion, $fecha);
-            
-            if (!$cronograma) {
-                throw new Exception('Institución no encontrada');
-            }
-
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => true,
-                'data' => $cronograma
-            ]);
-
-        } catch (Exception $e) {
-            header('Content-Type: application/json');
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
-        }
-        exit;
-    }
-
     private function sendSuccess($data) {
         header('Content-Type: application/json');
         echo json_encode([
@@ -191,3 +244,4 @@ class ReservaController {
 
 $controller = new ReservaController();
 $controller->obtenerReservas();
+?>

@@ -55,6 +55,13 @@ class TorneosModel {
             $types .= "s";
         }
         
+        // ✅ NUEVO: Filtro por usuario instalación (para instituciones deportivas)
+        if (!empty($filtros['usuario_instalacion_id'])) {
+            $sql .= " AND id.usuario_instalacion_id = ?";
+            $params[] = $filtros['usuario_instalacion_id'];
+            $types .= "i";
+        }
+        
         // Filtro por tipo de organizador (IPD/Privado)
         if (!empty($filtros['organizador_tipo'])) {
             if ($filtros['organizador_tipo'] === 'ipd') {
@@ -96,7 +103,106 @@ class TorneosModel {
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-    
+
+    // ✅ NUEVA FUNCIÓN: Crear torneo desde institución deportiva
+    public function crearTorneo($datos) {
+        $sql = "INSERT INTO torneos (
+                    nombre, descripcion, deporte_id, organizador_tipo, organizador_id,
+                    institucion_sede_id, max_equipos, fecha_inicio, fecha_fin,
+                    fecha_inscripcion_inicio, fecha_inscripcion_fin, modalidad,
+                    premio_descripcion, costo_inscripcion, imagen_torneo
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssisiissssssds", 
+            $datos['nombre'],
+            $datos['descripcion'],
+            $datos['deporte_id'],
+            $datos['organizador_tipo'],
+            $datos['organizador_id'],
+            $datos['institucion_sede_id'],
+            $datos['max_equipos'],
+            $datos['fecha_inicio'],
+            $datos['fecha_fin'],
+            $datos['fecha_inscripcion_inicio'],
+            $datos['fecha_inscripcion_fin'],
+            $datos['modalidad'],
+            $datos['premio_descripcion'],
+            $datos['costo_inscripcion'],
+            $datos['imagen_torneo']
+        );
+        
+        if ($stmt->execute()) {
+            return [
+                'success' => true,
+                'torneo_id' => $this->conn->insert_id,
+                'message' => 'Torneo creado exitosamente'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Error al crear el torneo: ' . $stmt->error
+            ];
+        }
+    }
+
+    // ✅ NUEVA FUNCIÓN: Actualizar torneo
+    public function actualizarTorneo($torneoId, $datos) {
+        $sql = "UPDATE torneos SET 
+                    nombre = ?, descripcion = ?, deporte_id = ?, 
+                    institucion_sede_id = ?, max_equipos = ?, fecha_inicio = ?, 
+                    fecha_fin = ?, fecha_inscripcion_inicio = ?, fecha_inscripcion_fin = ?,
+                    modalidad = ?, premio_descripcion = ?, costo_inscripcion = ?, 
+                    imagen_torneo = ?
+                WHERE id = ? AND organizador_id = ?";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ssiiisssssdsi", 
+            $datos['nombre'],
+            $datos['descripcion'],
+            $datos['deporte_id'],
+            $datos['institucion_sede_id'],
+            $datos['max_equipos'],
+            $datos['fecha_inicio'],
+            $datos['fecha_fin'],
+            $datos['fecha_inscripcion_inicio'],
+            $datos['fecha_inscripcion_fin'],
+            $datos['modalidad'],
+            $datos['premio_descripcion'],
+            $datos['costo_inscripcion'],
+            $datos['imagen_torneo'],
+            $torneoId,
+            $datos['organizador_id']
+        );
+        
+        if ($stmt->execute() && $stmt->affected_rows > 0) {
+            return [
+                'success' => true,
+                'message' => 'Torneo actualizado exitosamente'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'Error al actualizar el torneo o no tienes permisos'
+            ];
+        }
+    }
+
+    // ✅ NUEVA FUNCIÓN: Verificar si el usuario puede editar el torneo
+    public function verificarPermisosEdicion($torneoId, $usuarioId) {
+        $sql = "SELECT t.id 
+                FROM torneos t
+                INNER JOIN instituciones_deportivas id ON t.institucion_sede_id = id.id
+                WHERE t.id = ? AND id.usuario_instalacion_id = ?";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ii", $torneoId, $usuarioId);
+        $stmt->execute();
+        
+        return $stmt->get_result()->num_rows > 0;
+    }
+
+    // ✅ FUNCIONES EXISTENTES - Mantener como están
     public function obtenerDetallesTorneo($torneo_id) {
         $sql = "SELECT 
                     t.*,
@@ -198,6 +304,73 @@ class TorneosModel {
             return ['success' => true, 'message' => 'Equipo inscrito exitosamente'];
         } else {
             return ['success' => false, 'message' => 'Error al inscribir equipo'];
+        }
+    }
+    
+    // ✅ NUEVA FUNCIÓN: Guardar áreas deportivas asignadas al torneo
+    public function guardarAreasDelTorneo($torneoId, $areasDeportivas, $usuarioId) {
+        try {
+            // Crear modelo de áreas para las reservas
+            require_once __DIR__ . '/AreasDeportivasModel.php';
+            $areasModel = new AreasDeportivasModel();
+            
+            // Obtener fechas del torneo
+            $sql = "SELECT fecha_inicio, fecha_fin FROM torneos WHERE id = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $torneoId);
+            $stmt->execute();
+            $torneo = $stmt->get_result()->fetch_assoc();
+            
+            if (!$torneo) {
+                return ['success' => false, 'message' => 'Torneo no encontrado'];
+            }
+            
+            $reservasCreadas = 0;
+            $errores = [];
+            
+            // Iterar por cada fase y sus áreas
+            foreach ($areasDeportivas as $fase => $areas) {
+                // Calcular fecha de la fase (simplificado)
+                $fechaFase = $torneo['fecha_inicio']; // En una implementación real, calcularías la fecha específica
+                
+                foreach ($areas as $areaId) {
+                    // Reservar área de 9:00 AM a 6:00 PM por defecto
+                    $resultado = $areasModel->reservarAreaParaTorneo(
+                        $areaId, 
+                        $torneoId, 
+                        $fechaFase, 
+                        '09:00:00', 
+                        '18:00:00', 
+                        $usuarioId
+                    );
+                    
+                    if ($resultado['success']) {
+                        $reservasCreadas++;
+                    } else {
+                        $errores[] = "Área ID $areaId: " . $resultado['message'];
+                    }
+                }
+            }
+            
+            if ($reservasCreadas > 0) {
+                return [
+                    'success' => true, 
+                    'message' => "Se crearon $reservasCreadas reservas para el torneo",
+                    'reservas_creadas' => $reservasCreadas,
+                    'errores' => $errores
+                ];
+            } else {
+                return [
+                    'success' => false, 
+                    'message' => 'No se pudieron crear reservas: ' . implode(', ', $errores)
+                ];
+            }
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false, 
+                'message' => 'Error al guardar áreas: ' . $e->getMessage()
+            ];
         }
     }
     

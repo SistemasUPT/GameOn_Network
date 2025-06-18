@@ -12,24 +12,20 @@ require_once '../../Controllers/InsDeporController.php';
 
 $insDeporController = new InsDeporController();
 
-// Obtener datos usando tu controlador existente
-$todasLasInstalaciones = $insDeporController->getAllInstalaciones();
+// Obtener el ID del usuario de la sesión
+$usuarioInstalacionId = $_SESSION['user_id'];
 
-// Filtrar las instalaciones de esta institución específica
-$misInstalaciones = $todasLasInstalaciones; // Por ahora todas
+// Obtener datos específicos de esta institución
+$misInstalaciones = $insDeporController->getInstalacionesPorUsuario($usuarioInstalacionId);
+$reservasHoy = $insDeporController->getReservasHoyPorUsuario($usuarioInstalacionId);
+$datosCalificacion = $insDeporController->getCalificacionPromedioPorUsuario($usuarioInstalacionId);
+$estadisticasMes = $insDeporController->getEstadisticasMesPorUsuario($usuarioInstalacionId);
 
-// Datos simulados para las métricas
+// Datos de la institución
 $datosInstitucion = [
     'nombre' => $_SESSION['username'],
-    'calificacion_promedio' => 4.5,
-    'total_instalaciones' => count($misInstalaciones)
-];
-
-$reservasHoy = []; // Por ahora vacío
-$estadisticasMes = [
-    'ingresos' => 15500.00,
-    'reservas_completadas' => 45,
-    'nuevos_clientes' => 12
+    'calificacion_promedio' => $datosCalificacion['calificacion_promedio'],
+    'total_instalaciones' => $datosCalificacion['total_instalaciones']
 ];
 
 // Incluir cabecera
@@ -48,7 +44,7 @@ include_once 'header.php';
                 <i class="fas fa-plus"></i> Nueva Instalación
             </button>
             <button class="btn-secondary-inst btn-ver-promociones">
-                <i class="fas fa-bullhorn"></i> Crear Promoción
+                <i class="fas fa-bullhorn"></i> Crear Torneos
             </button>
         </div>
     </div>
@@ -62,7 +58,9 @@ include_once 'header.php';
             <div class="metric-content-inst">
                 <h3><?= count($misInstalaciones) ?></h3>
                 <p>Instalaciones Registradas</p>
-                <span class="metric-change-inst positive">Sistema funcionando</span>
+                <span class="metric-change-inst <?= count($misInstalaciones) > 0 ? 'positive' : 'neutral' ?>">
+                    <?= count($misInstalaciones) > 0 ? 'Activas en el sistema' : 'Sin instalaciones registradas' ?>
+                </span>
             </div>
         </div>
 
@@ -73,7 +71,9 @@ include_once 'header.php';
             <div class="metric-content-inst">
                 <h3><?= count($reservasHoy) ?></h3>
                 <p>Reservas Hoy</p>
-                <span class="metric-change-inst neutral">Sin conexión aún</span>
+                <span class="metric-change-inst <?= count($reservasHoy) > 0 ? 'positive' : 'neutral' ?>">
+                    <?= count($reservasHoy) > 0 ? 'Reservas activas' : 'Sin reservas hoy' ?>
+                </span>
             </div>
         </div>
 
@@ -83,8 +83,10 @@ include_once 'header.php';
             </div>
             <div class="metric-content-inst">
                 <h3>S/. <?= number_format($estadisticasMes['ingresos'], 2) ?></h3>
-                <p>Ingresos Proyectados</p>
-                <span class="metric-change-inst positive">Datos simulados</span>
+                <p>Ingresos Este Mes</p>
+                <span class="metric-change-inst <?= $estadisticasMes['ingresos'] > 0 ? 'positive' : 'neutral' ?>">
+                    <?= $estadisticasMes['reservas_completadas'] ?> reservas completadas
+                </span>
             </div>
         </div>
 
@@ -95,7 +97,9 @@ include_once 'header.php';
             <div class="metric-content-inst">
                 <h3><?= number_format($datosInstitucion['calificacion_promedio'], 1) ?></h3>
                 <p>Calificación Promedio</p>
-                <span class="metric-change-inst neutral">4.5/5.0 estrellas</span>
+                <span class="metric-change-inst neutral">
+                    Basada en <?= $datosInstitucion['total_instalaciones'] ?> instalación(es)
+                </span>
             </div>
         </div>
     </div>
@@ -107,31 +111,46 @@ include_once 'header.php';
             <!-- Mis Instalaciones -->
             <div class="content-card-inst">
                 <div class="card-header-inst">
-                    <h2><i class="fas fa-building"></i> Instalaciones del Sistema</h2>
-                    <button class="btn-outline-inst">Ver Todas</button>
+                    <h2><i class="fas fa-building"></i> Mis Instalaciones</h2>
+                    <a href="areas_deportivas.php" class="btn-outline-inst">Ver Áreas Deportivas</a>
                 </div>
                 <div class="instalaciones-grid-inst">
                     <?php if (!empty($misInstalaciones)): ?>
                         <?php foreach (array_slice($misInstalaciones, 0, 3) as $instalacion): ?>
-                        <div class="instalacion-card-inst">
+                        <div class="instalacion-card-inst" data-instalacion-id="<?= $instalacion['id'] ?>">
                             <div class="instalacion-imagen-inst">
-                                <img src="<?= $instalacion['imagen'] ?? '../../Resources/default_instalacion.jpg' ?>" alt="<?= htmlspecialchars($instalacion['nombre']) ?>">
+                                <?php if (!empty($instalacion['imagen'])): ?>
+                                    <img src="<?= htmlspecialchars($instalacion['imagen']) ?>" alt="<?= htmlspecialchars($instalacion['nombre']) ?>">
+                                <?php else: ?>
+                                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #e9ecef, #f8f9fa); color: #6c757d; cursor: pointer;" onclick="cambiarImagenInstalacion(<?= $instalacion['id'] ?>)">
+                                        <div style="text-align: center;">
+                                            <i class="fas fa-camera" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                            <p style="margin: 0; font-size: 14px;">Agregar Imagen</p>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                                 <div class="instalacion-estado-inst activa">Activa</div>
                             </div>
                             <div class="instalacion-info-inst">
                                 <h4><?= htmlspecialchars($instalacion['nombre']) ?></h4>
                                 <p><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($instalacion['direccion']) ?></p>
-                                <p><i class="fas fa-running"></i> Múltiples deportes</p>
+                                <p><i class="fas fa-dollar-sign"></i> 
+                                    <?php if ($instalacion['tarifa_promedio'] > 0): ?>
+                                        S/. <?= number_format($instalacion['tarifa_promedio'], 2) ?> promedio/hora
+                                    <?php else: ?>
+                                        Sin áreas deportivas
+                                    <?php endif; ?>
+                                </p>
                                 <div class="instalacion-stats-inst">
-                                    <span><i class="fas fa-calendar"></i> 0 reservas</span>
-                                    <span><i class="fas fa-star"></i> 4.5</span>
+                                    <span><i class="fas fa-star"></i> <?= number_format($instalacion['calificacion'], 1) ?></span>
+                                    <span><i class="fas fa-running"></i> <?= $instalacion['total_areas'] ?> áreas</span>
                                 </div>
                             </div>
                             <div class="instalacion-actions-inst">
-                                <button class="btn-small-inst btn-edit">
+                                <button class="btn-small-inst btn-edit" onclick="editarInstalacion(<?= $instalacion['id'] ?>)">
                                     <i class="fas fa-eye"></i> Ver
                                 </button>
-                                <button class="btn-small-inst btn-schedule">
+                                <button class="btn-small-inst btn-schedule" onclick="gestionarHorarios(<?= $instalacion['id'] ?>)">
                                     <i class="fas fa-clock"></i> Horarios
                                 </button>
                             </div>
@@ -140,12 +159,40 @@ include_once 'header.php';
                     <?php else: ?>
                         <div class="empty-state-inst">
                             <i class="fas fa-building"></i>
-                            <h3>¡Sistema de instalaciones deportivas!</h3>
-                            <p>Aquí se mostrarán las instalaciones cuando estén conectadas al sistema de reservas.</p>
+                            <h3>¡Registra tu primera instalación!</h3>
+                            <p>Aún no tienes instalaciones registradas. Comienza agregando tu primera instalación deportiva.</p>
+                            <button class="btn-primary-inst" style="margin-top: 15px;">
+                                <i class="fas fa-plus"></i> Nueva Instalación
+                            </button>
                         </div>
                     <?php endif; ?>
                 </div>
             </div>
+
+            <!-- Reservas de Hoy -->
+            <?php if (!empty($reservasHoy)): ?>
+            <div class="content-card-inst">
+                <div class="card-header-inst">
+                    <h2><i class="fas fa-calendar-check"></i> Reservas de Hoy</h2>
+                    <button class="btn-outline-inst">Ver Todas</button>
+                </div>
+                <div class="reservas-hoy-list">
+                    <?php foreach ($reservasHoy as $reserva): ?>
+                    <div class="reserva-item">
+                        <div class="reserva-info">
+                            <h4><?= htmlspecialchars($reserva['instalacion_nombre']) ?></h4>
+                            <p><i class="fas fa-user"></i> <?= htmlspecialchars($reserva['usuario_nombre']) ?></p>
+                            <p><i class="fas fa-running"></i> <?= htmlspecialchars($reserva['deporte_nombre']) ?></p>
+                        </div>
+                        <div class="reserva-tiempo">
+                            <span class="hora"><?= date('H:i', strtotime($reserva['hora_inicio'])) ?> - <?= date('H:i', strtotime($reserva['hora_fin'])) ?></span>
+                            <span class="estado estado-<?= $reserva['estado'] ?>"><?= ucfirst($reserva['estado']) ?></span>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <!-- Mensaje informativo -->
             <div class="content-card-inst">
@@ -156,13 +203,14 @@ include_once 'header.php';
                     <div class="alert alert-info">
                         <i class="fas fa-check-circle"></i>
                         <div>
-                            <h4>¡Dashboard de Instalaciones Deportivas Funcionando!</h4>
-                            <p>Has accedido correctamente al panel de gestión para instituciones deportivas privadas.</p>
+                            <h4>¡Dashboard de Instalaciones Deportivas Actualizado!</h4>
+                            <p>Panel de gestión completo con nuevas funcionalidades.</p>
                             <ul style="margin-top: 10px; padding-left: 20px;">
-                                <li>✅ Autenticación funcionando</li>
-                                <li>✅ Interfaz específica cargada</li>
-                                <li>✅ Controlador InsDepor conectado</li>
-                                <li>🔄 Próximo: Sistema de reservas</li>
+                                <li>✅ Gestión de imágenes con ImgBB</li>
+                                <li>✅ Calificaciones basadas en áreas deportivas</li>
+                                <li>✅ Tarifas promedio calculadas</li>
+                                <li>✅ Instalaciones: <?= count($misInstalaciones) ?></li>
+                                <li>✅ Reservas hoy: <?= count($reservasHoy) ?></li>
                             </ul>
                         </div>
                     </div>
@@ -183,6 +231,25 @@ include_once 'header.php';
                 </div>
             </div>
 
+            <!-- Estadísticas rápidas -->
+            <div class="sidebar-card-inst">
+                <h3><i class="fas fa-chart-bar"></i> Estadísticas</h3>
+                <div class="stats-quick">
+                    <div class="stat-quick-item">
+                        <span class="number"><?= $estadisticasMes['reservas_completadas'] ?></span>
+                        <span class="label">Reservas este mes</span>
+                    </div>
+                    <div class="stat-quick-item">
+                        <span class="number"><?= $estadisticasMes['nuevos_clientes'] ?></span>
+                        <span class="label">Nuevos clientes</span>
+                    </div>
+                    <div class="stat-quick-item">
+                        <span class="number"><?= number_format($datosInstitucion['calificacion_promedio'], 1) ?></span>
+                        <span class="label">Calificación promedio</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Acciones disponibles -->
             <div class="sidebar-card-inst">
                 <h3><i class="fas fa-cogs"></i> Funcionalidades</h3>
@@ -190,6 +257,10 @@ include_once 'header.php';
                     <div class="feature-item">
                         <i class="fas fa-building"></i>
                         <span>Gestión de instalaciones</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-running"></i>
+                        <span>Áreas deportivas</span>
                     </div>
                     <div class="feature-item">
                         <i class="fas fa-calendar"></i>
@@ -202,6 +273,10 @@ include_once 'header.php';
                     <div class="feature-item">
                         <i class="fas fa-trophy"></i>
                         <span>Organización de torneos</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-camera"></i>
+                        <span>Gestión de imágenes</span>
                     </div>
                 </div>
             </div>

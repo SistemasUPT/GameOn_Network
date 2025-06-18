@@ -1,0 +1,728 @@
+/* Variables CSS */
+:root {
+    --primary-color: #2c5aa0;
+    --primary-light: #4a7bc8;
+    --primary-dark: #1e3d6f;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    
+    --text-primary: #2c3e50;
+    --text-secondary: #6c757d;
+    --text-muted: #868e96;
+    
+    --bg-card: #ffffff;
+    --bg-light: #f8f9fa;
+    --bg-gradient: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    
+    --border-color: #dee2e6;
+    --border-light: #e9ecef;
+    
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.12);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+    
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    
+    --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Layout principal */
+.main-content-inst {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: var(--spacing-lg);
+}
+
+.reservas-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+}
+
+/* Header de reservas */
+.reservas-header {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+}
+
+.header-content h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.header-content h2 i {
+    color: var(--primary-light);
+}
+
+.header-content p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.date-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.date-selector label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.date-selector input {
+    padding: 10px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transition: var(--transition-base);
+}
+
+.date-selector input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+}
+
+.btn-refresh {
+    background: var(--bg-gradient);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.btn-refresh:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Filtros */
+.filtros-reservas {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.filtro-instalacion, .filtro-deporte, .filtro-estado {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.filtros-reservas label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.filtros-reservas select {
+    padding: 10px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transition: var(--transition-base);
+}
+
+.filtros-reservas select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+}
+
+/* Leyenda */
+.leyenda-reservas {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xl);
+}
+
+.leyenda-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border-color);
+}
+
+.color-box.disponible {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    border-color: #28a745;
+}
+
+.color-box.ocupado {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    border-color: #dc3545;
+}
+
+.color-box.mantenimiento {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border-color: #ffc107;
+}
+
+.color-box.cerrado {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    border-color: #17a2b8;
+}
+
+/* Grid de reservas */
+.reservas-grid {
+    margin-bottom: var(--spacing-xl);
+}
+
+.instalacion-reservas {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.instalacion-header {
+    background: var(--bg-gradient);
+    color: white;
+    padding: var(--spacing-lg);
+}
+
+.instalacion-header h3 {
+    margin: 0 0 var(--spacing-sm) 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.instalacion-info .direccion {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Áreas deportivas */
+.areas-deportivas {
+    padding: var(--spacing-lg);
+}
+
+.area-deportiva {
+    border: 2px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-lg);
+    overflow: hidden;
+    transition: var(--transition-base);
+}
+
+.area-deportiva:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.area-header {
+    background: var(--bg-light);
+    padding: var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border-light);
+}
+
+.area-info h4 {
+    margin: 0 0 var(--spacing-xs) 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.area-info .tarifa {
+    font-size: 14px;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.area-estado {
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.area-estado.activa {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.area-estado.mantenimiento {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.area-estado i {
+    font-size: 8px;
+}
+
+/* Grid de horarios */
+.horarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--spacing-xs);
+    padding: var(--spacing-md);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.horario-bloque {
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm);
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-base);
+    position: relative;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-xs);
+}
+
+.horario-bloque:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.horario-bloque .hora {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.horario-bloque .duracion {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.horario-bloque.disponible {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    border-color: #28a745;
+    color: #155724;
+}
+
+.horario-bloque.disponible:hover {
+    background: linear-gradient(135deg, #c3e6cb, #b1dfbb);
+    border-color: #1e7e34;
+}
+
+.horario-bloque.ocupado {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    border-color: #dc3545;
+    color: #721c24;
+    cursor: pointer;
+}
+
+.horario-bloque.ocupado:hover {
+    background: linear-gradient(135deg, #f5c6cb, #f1b0b7);
+    border-color: #bd2130;
+}
+
+.horario-bloque.mantenimiento {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border-color: #ffc107;
+    color: #856404;
+    cursor: default;
+}
+
+.horario-bloque.cerrado {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    border-color: #17a2b8;
+    color: #0c5460;
+    cursor: default;
+}
+
+.reserva-info {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+}
+
+.reserva-info small {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1px 4px;
+    border-radius: 3px;
+    display: block;
+}
+
+/* Área en mantenimiento */
+.horarios-grid.mantenimiento-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.mantenimiento-mensaje {
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.mantenimiento-mensaje i {
+    font-size: 3rem;
+    color: var(--warning-color);
+    margin-bottom: var(--spacing-md);
+}
+
+.mantenimiento-mensaje h4 {
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.mantenimiento-mensaje p {
+    margin: 0;
+}
+
+/* Estadísticas de reservas */
+.estadisticas-reservas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    transition: var(--transition-base);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.stat-icon.green {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.stat-icon.blue {
+    background: linear-gradient(135deg, #007bff, #6f42c1);
+}
+
+.stat-icon.orange {
+    background: linear-gradient(135deg, #fd7e14, #ffc107);
+}
+
+.stat-content h3 {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-content p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-reserva {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease;
+}
+
+.modal-header {
+    background: var(--bg-gradient);
+    color: white;
+    padding: var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-base);
+}
+
+.btn-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+    padding: var(--spacing-lg);
+}
+
+.modal-actions {
+    padding: 0 var(--spacing-lg) var(--spacing-lg);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+}
+
+.btn-primary, .btn-secondary {
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-base);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.btn-primary {
+    background: var(--bg-gradient);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background: var(--text-secondary);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: var(--text-primary);
+}
+
+/* Empty state */
+.empty-reservas {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+}
+
+.empty-reservas i {
+    font-size: 4rem;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-lg);
+}
+
+.empty-reservas h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.empty-reservas p {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reservas-container {
+        padding: var(--spacing-sm);
+    }
+    
+    .reservas-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .header-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .date-selector {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .filtros-reservas {
+        grid-template-columns: 1fr;
+    }
+    
+    .leyenda-reservas {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .area-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+    }
+    
+    .horarios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: var(--spacing-xs);
+    }
+    
+    .estadisticas-reservas {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .horarios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+    
+    .horario-bloque {
+        min-height: 60px;
+        padding: var(--spacing-xs);
+    }
+    
+    .horario-bloque .hora {
+        font-size: 10px;
+    }
+    
+    .horario-bloque .duracion {
+        font-size: 8px;
+    }
+}
