@@ -116,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </form>
                 
                 <div class="forgot-password text-center">
-                    <a href="reset-password.php">
+                    <a href="forgot-password.php">
                         <i class="fas fa-question-circle"></i>
                         ¿Olvidaste tu contraseña?
                     </a>

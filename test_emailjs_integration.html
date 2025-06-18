@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Integración EmailJS - GameOn Network</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="email"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Prueba de Integración EmailJS</h1>
+            <p>GameOn Network - Sistema de Recuperación de Contraseñas</p>
+        </div>
+
+        <!-- Estado de Configuración -->
+        <div id="config-status" class="test-section info">
+            <h3>📋 Estado de Configuración</h3>
+            <p>Verificando configuración de EmailJS...</p>
+        </div>
+
+        <!-- Formulario de Prueba -->
+        <div class="test-section">
+            <h3>📧 Prueba de Envío de Email</h3>
+            <form id="test-form">
+                <div class="form-group">
+                    <label for="test-email">Email de Prueba:</label>
+                    <input type="email" id="test-email" name="test-email" required 
+                           placeholder="tu-email@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label for="test-name">Nombre de Prueba:</label>
+                    <input type="text" id="test-name" name="test-name" required 
+                           placeholder="Tu Nombre">
+                </div>
+                <button type="submit" id="send-test-btn">🚀 Enviar Email de Prueba</button>
+                <button type="button" id="check-config-btn">🔍 Verificar Configuración</button>
+            </form>
+        </div>
+
+        <!-- Log de Resultados -->
+        <div class="test-section">
+            <h3>📝 Log de Resultados</h3>
+            <div id="log" class="log">Esperando acciones...
+</div>
+        </div>
+
+        <!-- Instrucciones -->
+        <div class="test-section warning">
+            <h3>⚠️ Instrucciones Importantes</h3>
+            <ol>
+                <li><strong>Configura EmailJS primero:</strong> Sigue las instrucciones en <code>EMAILJS_SETUP.md</code></li>
+                <li><strong>Actualiza credenciales:</strong> Modifica <code>Config/emailjs_config.js</code> con tus datos reales</li>
+                <li><strong>Usa email real:</strong> Ingresa un email válido para recibir la prueba</li>
+                <li><strong>Revisa spam:</strong> El email puede llegar a la carpeta de spam</li>
+                <li><strong>Límites:</strong> Plan gratuito permite 200 emails/mes</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <!-- Configuración EmailJS -->
+    <script src="Config/emailjs_config.js"></script>
+
+    <script>
+        const log = document.getElementById('log');
+        const configStatus = document.getElementById('config-status');
+        const sendBtn = document.getElementById('send-test-btn');
+        const checkBtn = document.getElementById('check-config-btn');
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            log.textContent += logEntry;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function updateConfigStatus(status, message, type) {
+            configStatus.className = `test-section ${type}`;
+            configStatus.innerHTML = `<h3>📋 Estado de Configuración</h3><p>${message}</p>`;
+        }
+
+        function checkConfiguration() {
+            addLog('Verificando configuración de EmailJS...');
+            
+            try {
+                // Verificar si EmailJS está cargado
+                if (typeof emailjs === 'undefined') {
+                    throw new Error('EmailJS SDK no está cargado');
+                }
+                addLog('✅ EmailJS SDK cargado correctamente');
+
+                // Verificar si la configuración está cargada
+                if (typeof EMAILJS_CONFIG === 'undefined') {
+                    throw new Error('Configuración de EmailJS no encontrada');
+                }
+                addLog('✅ Archivo de configuración cargado');
+
+                // Verificar credenciales
+                const { publicKey, serviceID, templateID } = EMAILJS_CONFIG;
+                
+                if (!publicKey || publicKey.includes('TU_PUBLIC_KEY')) {
+                    throw new Error('Public Key no configurado');
+                }
+                addLog('✅ Public Key configurado');
+
+                if (!serviceID || serviceID.includes('TU_SERVICE_ID')) {
+                    throw new Error('Service ID no configurado');
+                }
+                addLog('✅ Service ID configurado');
+
+                if (!templateID || templateID.includes('TU_TEMPLATE_ID')) {
+                    throw new Error('Template ID no configurado');
+                }
+                addLog('✅ Template ID configurado');
+
+                // Verificar si las funciones están disponibles
+                if (typeof initializeEmailJS !== 'function') {
+                    throw new Error('Función initializeEmailJS no encontrada');
+                }
+                addLog('✅ Función de inicialización disponible');
+
+                if (typeof sendRecoveryEmail !== 'function') {
+                    throw new Error('Función sendRecoveryEmail no encontrada');
+                }
+                addLog('✅ Función de envío disponible');
+
+                // Inicializar EmailJS
+                initializeEmailJS();
+                addLog('✅ EmailJS inicializado correctamente');
+
+                updateConfigStatus('success', '✅ Configuración completa y válida', 'success');
+                sendBtn.disabled = false;
+                addLog('🎉 Sistema listo para enviar emails');
+
+            } catch (error) {
+                addLog(`❌ Error de configuración: ${error.message}`, 'error');
+                updateConfigStatus('error', `❌ Error: ${error.message}`, 'error');
+                sendBtn.disabled = true;
+            }
+        }
+
+        async function sendTestEmail() {
+            const email = document.getElementById('test-email').value;
+            const name = document.getElementById('test-name').value;
+
+            if (!email || !name) {
+                addLog('❌ Por favor completa todos los campos', 'error');
+                return;
+            }
+
+            addLog(`📧 Enviando email de prueba a: ${email}`);
+            sendBtn.disabled = true;
+            sendBtn.textContent = '⏳ Enviando...';
+
+            try {
+                // Datos de prueba para el email
+                const emailData = {
+                    to_email: email,
+                    to_name: name,
+                    recovery_link: 'http://localhost/GameOn_Network/Views/Auth/reset-password.php?token=TEST_TOKEN_123',
+                    expiration_time: new Date(Date.now() + 24*60*60*1000).toLocaleString('es-ES'),
+                    user_type_display: 'Usuario de Prueba'
+                };
+
+                const result = await sendRecoveryEmail(emailData);
+
+                if (result.success) {
+                    addLog('✅ Email enviado exitosamente!', 'success');
+                    addLog(`📊 Response ID: ${result.response.text}`);
+                    updateConfigStatus('success', '✅ Email enviado correctamente. Revisa tu bandeja de entrada.', 'success');
+                } else {
+                    throw new Error(result.error?.text || 'Error desconocido');
+                }
+
+            } catch (error) {
+                addLog(`❌ Error al enviar email: ${error.message}`, 'error');
+                updateConfigStatus('error', `❌ Error al enviar: ${error.message}`, 'error');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = '🚀 Enviar Email de Prueba';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('check-config-btn').addEventListener('click', checkConfiguration);
+        document.getElementById('test-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            sendTestEmail();
+        });
+
+        // Verificar configuración al cargar la página
+        window.addEventListener('load', function() {
+            addLog('🚀 Iniciando verificación de EmailJS...');
+            setTimeout(checkConfiguration, 1000); // Dar tiempo a que se carguen los scripts
+        });
+    </script>
+</body>
+</html>

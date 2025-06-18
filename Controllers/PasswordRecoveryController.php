@@ -103,7 +103,7 @@ class PasswordRecoveryController {
 
         return [
             'success' => true,
-            'token_data' => $tokenData
+            'data' => $tokenData
         ];
     }
 
@@ -172,7 +172,77 @@ class PasswordRecoveryController {
      */
     private function generarEnlaceRecuperacion($token) {
         $base_url = $this->getBaseUrl();
-        return $base_url . "/Views/Auth/reset_password.php?token=" . urlencode($token);
+        return $base_url . "/Views/Auth/reset-password.php?token=" . urlencode($token);
+    }
+
+    /**
+     * Preparar datos para EmailJS
+     */
+    public function prepararDatosEmailJS($email, $user_type) {
+        // Validar entrada
+        if (empty($email) || empty($user_type)) {
+            return [
+                'success' => false,
+                'message' => 'Email y tipo de usuario son requeridos.'
+            ];
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return [
+                'success' => false,
+                'message' => 'Formato de email inválido.'
+            ];
+        }
+
+        if (!in_array($user_type, ['deportista', 'instalacion'])) {
+            return [
+                'success' => false,
+                'message' => 'Tipo de usuario inválido.'
+            ];
+        }
+
+        // Buscar usuario por email
+        $usuario = $this->usuarioModel->buscarUsuarioPorEmail($email, $user_type);
+        
+        if (!$usuario) {
+            // Por seguridad, no revelamos si el email existe o no
+            return [
+                'success' => true,
+                'message' => 'Si el email existe en nuestro sistema, recibirás un enlace de recuperación.',
+                'send_email' => false
+            ];
+        }
+
+        // Crear token de recuperación
+        $tokenResult = $this->usuarioModel->crearTokenRecuperacion(
+            $usuario['id'], 
+            $user_type, 
+            $email
+        );
+
+        if (isset($tokenResult['error'])) {
+            return [
+                'success' => false,
+                'message' => 'Error interno. Intenta nuevamente más tarde.'
+            ];
+        }
+
+        // Preparar datos específicos para EmailJS
+        $recoveryLink = $this->generarEnlaceRecuperacion($tokenResult['token']);
+        $expirationTime = date('d/m/Y H:i', strtotime($tokenResult['expires_at']));
+        
+        return [
+            'success' => true,
+            'message' => 'Datos preparados para envío de email.',
+            'send_email' => true,
+            'email_data' => [
+                'to_email' => $email,
+                'to_name' => $usuario['username'],
+                'recovery_link' => $recoveryLink,
+                'expiration_time' => $expirationTime,
+                'user_type_display' => $user_type === 'deportista' ? 'Deportista' : 'Institución Deportiva'
+            ]
+        ];
     }
 
     /**
@@ -215,6 +285,13 @@ class PasswordRecoveryController {
                 $email = $_POST['email'] ?? '';
                 $user_type = $_POST['user_type'] ?? '';
                 $result = $this->solicitarRecuperacion($email, $user_type);
+                echo json_encode($result);
+                break;
+                
+            case 'preparar_emailjs':
+                $email = $_POST['email'] ?? '';
+                $user_type = $_POST['user_type'] ?? '';
+                $result = $this->prepararDatosEmailJS($email, $user_type);
                 echo json_encode($result);
                 break;
                 
