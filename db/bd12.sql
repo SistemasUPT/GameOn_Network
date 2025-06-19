@@ -574,6 +574,56 @@ INSERT INTO `usuarios_instalaciones` (`id`, `username`, `password`, `estado`, `c
 	(1, 'andy', '$2y$10$IJrd1jNkOJNb73BS68/c.OeQG2R7NQmcuNoktqQINYtBYo1C4moOG', 1, '2025-05-19 17:20:31', 'privado'),
 	(2, 'ipd_tacna', '$2y$10$DetTzM9npZHxn9dufxtAoekAOZBzfmlQ568JEkpg4wIc3VrLJ6XEO', 1, '2025-06-04 20:03:09', 'ipd');
 
+-- Tabla para instituciones deportivas con datos de SUNAT
+CREATE TABLE instituciones_deportivas2 (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    ruc VARCHAR(11) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    
+    -- Datos obtenidos de SUNAT
+    razon_social_sunat VARCHAR(500),
+    direccion_sunat TEXT,
+    distrito_sunat VARCHAR(100),
+    provincia_sunat VARCHAR(100),
+    departamento_sunat VARCHAR(100),
+    estado_sunat VARCHAR(50),
+    condicion_sunat VARCHAR(50),
+    
+    -- Archivo legal subido
+    documento_legal VARCHAR(255),
+    
+    -- Control de registro y aprobación
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    estado_aprobacion ENUM('PENDIENTE', 'APROBADO', 'RECHAZADO') DEFAULT 'PENDIENTE',
+    fecha_aprobacion TIMESTAMP NULL,
+    observaciones TEXT,
+    
+    -- Datos de activación
+    activo BOOLEAN DEFAULT FALSE,
+    fecha_activacion TIMESTAMP NULL,
+    
+    -- Índices para mejorar rendimiento
+    INDEX idx_ruc (ruc),
+    INDEX idx_email (email),
+    INDEX idx_estado_aprobacion (estado_aprobacion),
+    INDEX idx_activo (activo)
+);
+
+-- Tabla para logs de validaciones SUNAT (opcional pero recomendada)
+CREATE TABLE sunat_validaciones_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ruc VARCHAR(11) NOT NULL,
+    tipo_consulta VARCHAR(50) NOT NULL,
+    respuesta_exitosa BOOLEAN NOT NULL,
+    datos_respuesta JSON,
+    fecha_consulta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip_origen VARCHAR(45),
+    
+    INDEX idx_ruc (ruc),
+    INDEX idx_fecha (fecha_consulta)
+);
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
