@@ -4,14 +4,14 @@
  * Con validación de RUC mediante API de SUNAT
  */
 
-// Incluir la clase SunatAPI
-require_once 'SunatAPI.php';
+// Incluir la clase SunatAPI (ruta corregida)
+require_once __DIR__ . '/../../SunatAPI.php';
 
 // Configuración de base de datos (ajusta según tu configuración)
 $host = 'localhost';
-$dbname = 'gameon_network';
-$username = 'tu_usuario';
-$password = 'tu_password';
+$dbname = 'gameon';
+$username = 'root'; 
+$password = '';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);

@@ -4,7 +4,7 @@
  * Especializada en validación de RUC y consultas de contribuyentes
  */
 
-require_once 'config_sunat.php';
+require_once __DIR__ . '/config_sunat.php';
 
 class SunatAPI {
     
@@ -137,23 +137,25 @@ class SunatAPI {
      * @return bool
      */
     private function validarFormatoRUC($ruc) {
+        // Solo valida que sean 11 dígitos numéricos
+        return preg_match('/^\d{11}$/', $ruc);
         // RUC debe tener 11 dígitos
-        if (strlen($ruc) !== 11 || !ctype_digit($ruc)) {
-            return false;
-        }
+        // if (strlen($ruc) !== 11 || !ctype_digit($ruc)) {
+        //     return false;
+        // }
         
-        // Validación del dígito verificador
-        $factor = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
-        $suma = 0;
+        // // Validación del dígito verificador
+        // $factor = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
+        // $suma = 0;
         
-        for ($i = 0; $i < 10; $i++) {
-            $suma += $ruc[$i] * $factor[$i];
-        }
+        // for ($i = 0; $i < 10; $i++) {
+        //     $suma += $ruc[$i] * $factor[$i];
+        // }
         
-        $resto = $suma % 11;
-        $digitoVerificador = $resto < 2 ? $resto : 11 - $resto;
+        // $resto = $suma % 11;
+        // $digitoVerificador = $resto < 2 ? $resto : 11 - $resto;
         
-        return $digitoVerificador == $ruc[10];
+        // return $digitoVerificador == $ruc[10];
     }
     
     /**

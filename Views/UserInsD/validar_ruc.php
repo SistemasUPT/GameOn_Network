@@ -19,10 +19,11 @@ if (!isset($_POST['ruc']) || empty($_POST['ruc'])) {
     exit;
 }
 
-// Incluir la clase SunatAPI
-require_once 'SunatAPI.php';
+// Incluir la clase SunatAPI (ruta corregida)
+require_once __DIR__ . '/SunatAPI.php';
 
 $ruc = trim($_POST['ruc']);
+
 
 try {
     $sunatAPI = new SunatAPI();

@@ -82,7 +82,7 @@ function probarConexionBD() {
         echo "✓ Conexión a base de datos exitosa\n";
         
         // Verificar si las tablas existen
-        $tablas = ['instituciones_deportivas', 'sunat_validaciones_log'];
+        $tablas = ['instituciones_deportivas2', 'sunat_validaciones_log'];
         
         foreach ($tablas as $tabla) {
             $stmt = $pdo->query("SHOW TABLES LIKE '{$tabla}'");

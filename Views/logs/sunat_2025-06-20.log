@@ -1,0 +1,5 @@
+[2025-06-20 00:03:20] RUC con formato inválido: 10480599981
+[2025-06-20 00:12:27] Iniciando validación de RUC: 10480599981 | Context: {"api":"apisperu"}
+[2025-06-20 00:12:28] Validación completada para RUC: 10480599981 | Context: {"success":false,"api":"apisperu"}
+[2025-06-20 00:12:54] Iniciando validación de RUC: 10007958108 | Context: {"api":"apisperu"}
+[2025-06-20 00:12:55] Validación completada para RUC: 10007958108 | Context: {"success":false,"api":"apisperu"}

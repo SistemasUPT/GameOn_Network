@@ -22,12 +22,12 @@ define('SUNAT_APIs', [
             'Accept: application/json',
             'Authorization: Bearer {token}'
         ]
+    ],
+    'consulta_sunat' => [
+        'url' => 'https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias',
+        'method' => 'POST',
+        'scraping' => true // Indica que requiere scraping web
     ]
-    // 'consulta_sunat' => [
-    //     'url' => 'https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias',
-    //     'method' => 'POST',
-    //     'scraping' => true // Indica que requiere scraping web
-    // ]
 ]);
 
 // API por defecto a usar
@@ -40,7 +40,7 @@ define('SUNAT_CONNECT_TIMEOUT', 10);
 // Configuración de base de datos
 define('DB_CONFIG', [
     'host' => 'localhost',
-    'dbname' => 'gameon_network',
+    'dbname' => 'gameon',
     'username' => 'root',
     'password' => '',
     'charset' => 'utf8'
@@ -58,10 +58,10 @@ define('UPLOAD_CONFIG', [
 define('EMAIL_CONFIG', [
     'from' => 'noreply@gameonnetwork.com',
     'from_name' => 'GameOn Network',
-    'smtp_host' => 'smtp.gmail.com', // Cambiar según tu proveedor
+    'smtp_host' => 'zurcthorvic07.gmail.com', // Cambiar según tu proveedor
     'smtp_port' => 587,
-    'smtp_username' => 'tu_email@gmail.com',
-    'smtp_password' => 'tu_password_app',
+    'smtp_username' => 'zurcthorvic07@gmail.com',
+    'smtp_password' => 'bb6.Ac15',
     'smtp_secure' => 'tls'
 ]);
 
