@@ -23,6 +23,15 @@ define('SUNAT_APIs', [
             'Authorization: Bearer {token}'
         ]
     ],
+    'factiliza' => [
+        'url' => 'https://api.factiliza.com/v1/ruc/info/{ruc}', // Cambia la URL si es diferente
+        'token' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzODkxNiIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6ImNvbnN1bHRvciJ9.OJI-RHXFevShMsj6dOpPQzArdxbk1JfgI_YH5NpC_ik', // Reemplaza con tu token real
+        'method' => 'GET',
+        'headers' => [
+            'Accept: application/json',
+            'Authorization: Bearer {token}'
+        ]
+    ],
     'consulta_sunat' => [
         'url' => 'https://e-consultaruc.sunat.gob.pe/cl-ti-itmrconsruc/jcrS00Alias',
         'method' => 'POST',
@@ -31,7 +40,7 @@ define('SUNAT_APIs', [
 ]);
 
 // API por defecto a usar
-define('SUNAT_API_DEFAULT', 'apisperu');
+define('SUNAT_API_DEFAULT', 'factiliza');
 
 // Configuración de timeouts
 define('SUNAT_TIMEOUT', 30);

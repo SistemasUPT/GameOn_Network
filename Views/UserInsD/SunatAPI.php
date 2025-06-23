@@ -164,7 +164,38 @@ class SunatAPI {
      * @param string $ruc
      * @return array
      */
+
     private function procesarRespuestaSUNAT($data, $ruc) {
+        // Si la API actual es factiliza, ajusta el mapeo de campos
+        if ($this->current_api === 'factiliza') {
+            if (!isset($data['success']) || !$data['success'] || !isset($data['data'])) {
+                return [
+                    'success' => false,
+                    'message' => 'RUC no encontrado o inactivo en Factiliza',
+                    'data' => null
+                ];
+            }
+            $d = $data['data'];
+            return [
+                'success' => true,
+                'message' => 'RUC válido y activo',
+                'data' => [
+                    'ruc' => $d['numero'] ?? $ruc,
+                    'razon_social' => $d['nombre_o_razon_social'] ?? '',
+                    'nombre_comercial' => $d['nombre_comercial'] ?? '',
+                    'direccion' => $d['direccion'] ?? '',
+                    'ubigeo' => $d['ubigeo_sunat'] ?? '',
+                    'distrito' => $d['distrito'] ?? '',
+                    'provincia' => $d['provincia'] ?? '',
+                    'departamento' => $d['departamento'] ?? '',
+                    'estado' => $d['estado'] ?? '',
+                    'condicion' => $d['condicion'] ?? '',
+                    'tipo_contribuyente' => $d['tipo_contribuyente'] ?? $d['tipoContribuyente'] ?? ''
+                ]
+            ];
+        }
+
+        // Para otras APIs, usa el mapeo anterior
         if (!isset($data['success']) || !$data['success']) {
             return [
                 'success' => false,
@@ -172,7 +203,6 @@ class SunatAPI {
                 'data' => null
             ];
         }
-        
         return [
             'success' => true,
             'message' => 'RUC válido y activo',

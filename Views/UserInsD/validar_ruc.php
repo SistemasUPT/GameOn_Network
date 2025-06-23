@@ -28,6 +28,10 @@ $ruc = trim($_POST['ruc']);
 try {
     $sunatAPI = new SunatAPI();
     $resultado = $sunatAPI->validarRUC($ruc);
+
+    // Agrega esto para depurar la respuesta real:
+    file_put_contents('debug_factiliza.txt', print_r($resultado['data'], true));
+
     
     // Si la validación es exitosa, verificar estado y condición
     if ($resultado['success']) {
