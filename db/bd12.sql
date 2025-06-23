@@ -393,13 +393,13 @@ CREATE TABLE IF NOT EXISTS `reservas` (
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Volcando datos para la tabla gameon.reservas: ~6 rows (aproximadamente)
-INSERT INTO `reservas` (`id`, `id_usuario`, `area_deportiva_id`, `fecha`, `hora_inicio`, `hora_fin`, `estado`, `observaciones`, `creado_en`) VALUES
-	(1, 2, 16, '2025-06-17', '07:00:00', '08:00:00', 'confirmada', NULL, '2025-06-17 07:47:20'),
-	(2, 3, 16, '2025-06-17', '10:00:00', '12:00:00', 'confirmada', NULL, '2025-06-17 07:47:20'),
-	(3, 4, 16, '2025-06-17', '16:00:00', '17:30:00', 'confirmada', NULL, '2025-06-17 07:47:20'),
-	(4, 2, 18, '2025-06-17', '08:00:00', '09:00:00', 'confirmada', NULL, '2025-06-17 07:47:20'),
-	(5, 2, 16, '2025-06-18', '09:00:00', '10:30:00', 'confirmada', NULL, '2025-06-17 07:47:20'),
-	(6, 3, 18, '2025-06-18', '15:00:00', '16:30:00', 'pendiente', NULL, '2025-06-17 07:47:20');
+INSERT INTO `reservas` (`id`, `id_usuario`, `area_deportiva_id`, `fecha`, `hora_inicio`, `hora_fin`, `estado`, `creado_en`) VALUES
+	(1, 2, 16, '2025-06-17', '07:00:00', '08:00:00', 'confirmada', '2025-06-17 07:47:20'),
+	(2, 3, 16, '2025-06-17', '10:00:00', '12:00:00', 'confirmada', '2025-06-17 07:47:20'),
+	(3, 4, 16, '2025-06-17', '16:00:00', '17:30:00', 'confirmada', '2025-06-17 07:47:20'),
+	(4, 2, 18, '2025-06-17', '08:00:00', '09:00:00', 'confirmada', '2025-06-17 07:47:20'),
+	(5, 2, 16, '2025-06-18', '09:00:00', '10:30:00', 'confirmada', '2025-06-17 07:47:20'),
+	(6, 3, 18, '2025-06-18', '15:00:00', '16:30:00', 'pendiente', '2025-06-17 07:47:20');
 
 -- Volcando estructura para tabla gameon.torneos
 CREATE TABLE IF NOT EXISTS `torneos` (
@@ -624,6 +624,27 @@ CREATE TABLE sunat_validaciones_log (
     INDEX idx_ruc (ruc),
     INDEX idx_fecha (fecha_consulta)
 );
+
+-- Volcando estructura para tabla gameon.password_recovery_tokens
+CREATE TABLE IF NOT EXISTS `password_recovery_tokens` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_type` enum('deportista','instalacion') NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `used_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `token` (`token`),
+  KEY `idx_user_type_id` (`user_type`,`user_id`),
+  KEY `idx_token_expires` (`token`,`expires_at`),
+  KEY `idx_email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Volcando datos para la tabla gameon.password_recovery_tokens: ~0 rows (aproximadamente)
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

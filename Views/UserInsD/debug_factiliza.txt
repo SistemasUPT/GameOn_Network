@@ -1,14 +1,14 @@
 Array
 (
-    [ruc] => 20601907446
-    [razon_social] => SMALL MONEY-TAU EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA - SM TAU E.I.R.L.
+    [ruc] => 20519610214
+    [razon_social] => MUNICIPALIDAD DISTRITAL CORONEL GREGORIO ALBARRACIN LANCHIPA
     [nombre_comercial] => 
-    [direccion] => AV. CORONEL MENDOZA NRO. 1945 INT. A043 ASC. C.C. MERCADILLO BOLOGNESI
-    [ubigeo] => 230101
-    [distrito] => TACNA
+    [direccion] => AV. MUNICIPAL NRO. S/N (CUADRA 12) TACNA
+    [ubigeo] => 
+    [distrito] => CRL. GREG. ALBARRACIN LANCHIPA
     [provincia] => TACNA
-    [departamento] => TACNA
+    [departamento] => 
     [estado] => ACTIVO
     [condicion] => HABIDO
-    [tipo_contribuyente] => EMPRESA INDIVIDUAL DE RESP. LTDA
+    [tipo_contribuyente] => GOBIERNO REGIONAL, LOCAL
 )

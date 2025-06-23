@@ -18,3 +18,9 @@
 [2025-06-23 11:12:46] Validación completada para RUC: 20601907446 | Context: {"success":true,"api":"factiliza"}
 [2025-06-23 11:26:10] Iniciando validación de RUC: 20601907446 | Context: {"api":"factiliza"}
 [2025-06-23 11:26:12] Validación completada para RUC: 20601907446 | Context: {"success":true,"api":"factiliza"}
+[2025-06-23 17:30:25] Iniciando validación de RUC: 20519610214 | Context: {"api":"factiliza"}
+[2025-06-23 17:30:27] Validación completada para RUC: 20519610214 | Context: {"success":true,"api":"factiliza"}
+[2025-06-23 17:30:34] Iniciando validación de RUC: 20519610213 | Context: {"api":"factiliza"}
+[2025-06-23 17:30:37] Error en validación RUC 20519610213: Error HTTP: 404 | Context: {"api":"factiliza"}
+[2025-06-23 17:30:50] Iniciando validación de RUC: 20519610214 | Context: {"api":"factiliza"}
+[2025-06-23 17:30:52] Validación completada para RUC: 20519610214 | Context: {"success":true,"api":"factiliza"}
